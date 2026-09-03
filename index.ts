@@ -266,26 +266,26 @@ export default function piOpenCodeGoUsage(pi: ExtensionAPI): void {
           parts.push(cpStr);
 
           // ── OpenCode Go quota segment ──
-          // Compact: `Mo:Z% 5h:X%Wk:Y%` with no separator between
-          // the 5h and weekly meters. Progressively omit monthly,
-          // then rolling windows when the footer is narrow.
+          // Smallest window first: `5h:X% Wk:Y% Mo:Z%`.
+          // Progressively omit the monthly quota when narrow.
           let usageFull = "";
           let usageCompact = "";
           let usageIdx = -1;
           if (usage) {
-            const rolling: string[] = [];
+            const segments: string[] = [];
             if (usage.fiveHour) {
               const w = usage.fiveHour;
-              rolling.push(`${flagFor(w.percent, FIVE_HOUR_MS, w.resetMs)}5h:${w.percent}%`);
+              segments.push(`${flagFor(w.percent, FIVE_HOUR_MS, w.resetMs)}5h:${w.percent}%`);
             }
             if (usage.weekly) {
               const w = usage.weekly;
-              rolling.push(`${flagFor(w.percent, WEEK_MS, w.resetMs)}Wk:${w.percent}%`);
+              segments.push(`${flagFor(w.percent, WEEK_MS, w.resetMs)}Wk:${w.percent}%`);
             }
-            const rollingText = rolling.join("");
-            const monthlyText = usage.monthly ? `Mo:${usage.monthly.percent}%` : "";
-            usageCompact = rollingText;
-            usageFull = [monthlyText, rollingText].filter(Boolean).join(" ");
+            if (usage.monthly) {
+              segments.push(`Mo:${usage.monthly.percent}%`);
+            }
+            usageFull = segments.join(" ");
+            usageCompact = segments.slice(0, 2).join(" ");
             usageIdx = parts.length;
             parts.push(usageFull);
           }

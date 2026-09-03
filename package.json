@@ -1,6 +1,6 @@
 {
   "name": "pi-opencodego-usage",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "OpenCode Go subscription usage monitor for Pi coding agent. Displays monthly, 5h and weekly rolling quota in the footer, matching Pi's native footer experience.",
   "type": "module",
   "license": "MIT",
